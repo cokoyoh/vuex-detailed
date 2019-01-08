@@ -1,6 +1,6 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
-import shop from '../api/shop'
+import actions from './actions'
 
 Vue.use(Vuex);
 
@@ -48,43 +48,7 @@ export default new Vuex.Store({
         }
     },
 
-    actions: { // = methods
-        fetchProducts({commit}) {
-            return new Promise((resolve, reject) => {
-                shop.getProducts(products => {
-                    commit('setProducts', products);
-                    resolve()
-                })
-            });
-        },
-
-        addProductToCart({state, getters, commit}, product) {
-            if (getters.productIsInStock(product)) {
-                const cartItem = state.cart.find(item => item.id === product.id);
-
-                if (!cartItem) {
-                    commit('pushProductToCart', product.id)
-                } else {
-                    commit('incrementItemQuantity', cartItem)
-                }
-
-                commit('decrementProductInventory', product)
-            }
-        },
-
-        checkout({state, commit}) {
-            shop.buyProducts(
-                state.cart,
-                () => {
-                    commit('emptyCart');
-                    commit('setCheckoutState', 'success')
-                },
-                () => {
-                    commit('setCheckoutState', 'fail')
-                }
-            )
-        }
-    },
+    actions,
 
     mutations: { //responsible for setting and updating the state
         setProducts(state, products) {
